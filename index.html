@@ -1,81 +1,119 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>한글 테트리스</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>한글 테트리스</title>
 
-  <!-- 공유용 -->
-  <meta property="og:title" content="한글 테트리스">
-  <meta property="og:description" content="유아 친화 UI로 즐기는 한글 자모 테트리스 게임">
-  <meta property="og:type" content="website">
+<!-- 공유/메타 -->
+<meta property="og:title" content="한글 테트리스">
+<meta property="og:description" content="큰 글자 · 큰 버튼 · 센터 정렬(유아 UI)">
+<meta property="og:type" content="website">
 
-  <!-- 큰 가독성 폰트 -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+<!-- 유아 UI 폰트 -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
 
-  <style>
-    :root{
-      --bg1:#fff7ed; --bg2:#ffffff;
-      --text:#0f172a; --muted:#475569;
-      --panel:#ffffff; --shadow:0 10px 28px rgba(0,0,0,.06);
-      --accent:#f59e0b;
-    }
-    *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
-    html,body{height:100%}
-    body{
-      margin:0; padding:24px 16px max(24px, env(safe-area-inset-bottom));
-      display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
-      background:linear-gradient(180deg,var(--bg1) 0%,var(--bg2) 60%);
-      color:var(--text);
-      font-family:"Jua","Noto Sans KR",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
-      letter-spacing:.2px; text-align:center;
-    }
-    header{
-      width:100%; max-width:980px; margin:0 auto 12px;
-    }
-    h1{
-      margin:0 0 6px;
-      font-size:clamp(36px, 9vw, 60px);
-      color:var(--accent);
-      text-shadow:0 2px 0 rgba(255,255,255,.9);
-    }
-    p.sub{margin:0 0 14px; color:var(--muted); font-size:clamp(16px,4.6vw,20px)}
-    main{
-      width:100%; max-width:980px;
-      background:var(--panel); border-radius:24px;
-      box-shadow:var(--shadow); padding:14px;
-    }
-    /* 유아 UI: 기본 글자/버튼 크게 */
-    main, main *{ font-size:clamp(16px, 4.4vw, 20px) }
-    button, .btn{
-      font:inherit; padding:14px 18px; border-radius:16px; border:0;
-      background:#10b981; color:#fff; cursor:pointer;
-    }
-    button:active{ transform:scale(.98) }
-    footer{ margin:14px 0 0; color:#94a3b8; font-size:14px }
-    a { color:#2563eb; text-decoration:none }
-  </style>
+<style>
+  :root{
+    --bg1:#ffe9d6; --bg2:#fffdf9;
+    --text:#0f172a; --muted:#475569; --accent:#f59e0b;
+    --panel:#ffffff; --shadow:0 10px 28px rgba(0,0,0,.06);
+    --ring:rgba(59,130,246,.35);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    margin:0; display:grid; grid-template-rows:auto 1fr auto;
+    min-height:100svh; color:var(--text);
+    background:linear-gradient(180deg,var(--bg1) 0%,var(--bg2) 65%);
+    font-family:"Jua","Noto Sans KR",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    letter-spacing:.2px;
+  }
+
+  /* 헤더 */
+  header{
+    display:grid; place-items:center;
+    padding:16px 12px 6px;
+  }
+  h1{
+    margin:0; font-size:clamp(34px,9vw,60px);
+    color:var(--accent); text-shadow:0 2px 0 rgba(255,255,255,.9);
+    text-align:center;
+  }
+  .sub{
+    margin:8px 0 0; text-align:center;
+    color:#334155; font-size:clamp(16px,4.8vw,20px);
+  }
+
+  /* 메인: 화면 정중앙, 가로세로 모두 센터 */
+  main{
+    display:grid; place-items:center; padding:12px;
+  }
+  .stage{
+    width:min(100%, 980px); height:min(78vh, 720px);
+    display:grid; place-items:center;
+    background:var(--panel); border-radius:24px; box-shadow:var(--shadow);
+    padding:10px;
+  }
+
+  /* 게임 프레임(클릭/터치 100% 허용) */
+  .game-frame{
+    width:100%; height:100%;
+    border:0; border-radius:16px;
+    background:#fff;
+    display:block;
+    /* 클릭 막는 오버레이 방지 */
+    pointer-events:auto; position:relative; z-index:1;
+  }
+
+  /* 푸터: 화면 맨 하단 */
+  footer{
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    padding:10px 14px 16px;
+    color:#94a3b8; font-size:14px; flex-wrap:wrap;
+  }
+  footer a{ color:#2563eb; text-decoration:none; font-weight:700 }
+  .spacer{ flex:1 1 0 }
+  .foot-wrap{
+    width:100%; max-width:980px; display:flex; align-items:center; gap:8px;
+  }
+  .foot-left{ white-space:nowrap }
+  .foot-right{ margin-left:auto; white-space:nowrap }
+
+  @media (prefers-reduced-motion: reduce){
+    *{scroll-behavior:auto}
+  }
+</style>
 </head>
 <body>
+
   <header>
     <h1>한글 테트리스</h1>
     <p class="sub">큰 글자 · 큰 버튼 · 센터 정렬(유아 UI)</p>
   </header>
 
-  <main id="game-root" role="main" aria-label="게임 영역">
-    <!-- ⬇⬇⬇ 여기부터 ⬇⬇⬇
-         네가 가진 `한글_테트리스.html`의 <body> 안쪽 내용을
-         이 주석 자리에 그대로 붙여넣으세요. (script 포함 가능)
-    -->
-    <!-- GAME HERE -->
-    <!-- ⬆⬆⬆ 여기까지 ⬆⬆⬆ -->
+  <main role="main" aria-label="게임 영역">
+    <div class="stage">
+      <!-- ⚠️ 같은 저장소 루트에 '한글_테트리스.html' 파일을 그대로 업로드하면 됩니다. -->
+      <iframe class="game-frame"
+              src="./한글_테트리스.html"
+              title="한글 테트리스 게임"
+              allow="fullscreen gamepad"
+              referrerpolicy="no-referrer">
+      </iframe>
+    </div>
   </main>
 
   <footer>
-    © 2025 밝음의근원 · All rights reserved. ·
-    <a href="https://m.blog.naver.com/xmoonsb" target="_blank" rel="noopener">네이버 블로그 밝음의근원</a>
+    <div class="foot-wrap">
+      <div class="foot-left">© 2025 밝음의근원 · All rights reserved.</div>
+      <div class="foot-right">
+        <a href="https://m.blog.naver.com/xmoonsb" target="_blank" rel="noopener">네이버 블로그 밝음의근원</a>
+      </div>
+    </div>
   </footer>
+
 </body>
 </html>
